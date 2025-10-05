@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Analisis Waktu FYP TikTok — @mlbb.cliperr</title>
+  <style>
+    :root{
+      --bg-start: #e6f7f3;
+      --bg-end: #f0fbff;
+      --card-bg: #ffffff;
+      --accent-1: #2E8B57;
+      --accent-2: #3AA776;
+      --text: #0f172a;
+      --muted: #6b7280;
+      --glass: rgba(255,255,255,0.6);
+    }
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+    body{
+      background: linear-gradient(180deg,var(--bg-start),var(--bg-end));
+      color:var(--text);
+      padding:18px;
+      -webkit-font-smoothing:antialiased;
+    }
+    .container{max-width:1100px;margin:0 auto;}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .brand{display:flex;align-items:center;gap:12px;}
+    .logo{
+      width:56px;height:56px;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));
+      border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;
+      box-shadow:0 6px 18px rgba(46,139,87,0.18);
+    }
+    .title{font-size:18px;font-weight:700}
+    .subtitle{font-size:13px;color:var(--muted)}
+    .card{background:var(--card-bg);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(15,23,42,0.06);}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px;}
+    @media(min-width:900px){.grid{grid-template-columns:320px 1fr;} .charts-grid{display:grid;grid-template-columns:1fr 360px;gap:14px;} }
+    .small-card{padding:12px;border-radius:10px;background:linear-gradient(90deg,#f7fff9,#f0fcff);}
+    .stat-title{font-size:12px;color:var(--muted);}
+    .stat-num{font-size:18px;font-weight:700;margin-top:6px;}
+    .list-row{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(15,23,42,0.04);}
+    .hint{font-size:12px;color:var(--muted);margin-top:10px;}
+    footer{margin-top:16px;font-size:12px;color:var(--muted);text-align:center;}
+    .controls{display:flex;gap:8px;align-items:center;}
+    input[type=file]{display:block;}
+    .period{font-size:13px;color:var(--muted);}
+    canvas{max-width:100%;}
+    .legend-item{display:flex;align-items:center;gap:8px}
+    .dot{width:12px;height:12px;border-radius:3px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <!-- simple musical-note SVG as logo -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 7V16.5A3.5 3.5 0 1 0 12.5 20V9h4V7H9z" fill="white"/>
+          </svg>
+        </div>
+        <div>
+          <div class="title">Analisis Waktu FYP TikTok</div>
+          <div class="subtitle">@mlbb.cliperr • Bahasa: Indonesia</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="period card" style="padding:10px 12px;border-radius:10px;">
+          Periode: <strong id="periodLabel">Kapan Saja</strong>
+        </div>
+        <div class="card" style="padding:8px;border-radius:10px;">
+          <label style="font-size:12px;color:var(--muted)">Impor CSV (opsional)</label><br/>
+          <input id="csvInput" type="file" accept=".csv" />
+        </div>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section>
+        <div class="card">
+          <h4 style="margin:0 0 6px 0">Ringkasan Per Slot</h4>
+          <div id="slotList" style="margin-top:8px"></div>
+          <div class="hint">🥇 Peringkat dihitung dari gabungan Engagement Rate & Retention. Gunakan data 2 minggu untuk hasil stabil.</div>
+        </div>
+        <div style="height:14px"></div>
+        <div class="card small-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><strong>Interpretasi Singkat</strong></div>
+          </div>
+          <ul style="margin:8px 0 0 16px;padding:0;">
+            <li>ER tinggi + Retention tinggi → Slot optimal</li>
+            <li>ER tinggi + Retention rendah → Perbaiki durasi / hook</li>
+            <li>ER rendah + Retention tinggi → Konten informatif, butuh CTA</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="charts-grid">
+          <div class="card" style="padding:12px;">
+            <h4 style="margin:0 0 6px 0">Rata-rata Engagement & Retention per Slot</h4>
+            <canvas id="barChart" width="600" height="320"></canvas>
+          </div>
+          <div class="card" style="padding:12px;">
+            <h4 style="margin:0 0 6px 0">Proporsi Skor Gabungan</h4>
+            <canvas id="pieChart" width="320" height="260"></canvas>
+            <div id="legend" style="margin-top:8px"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="card" style="margin-top:14px;">
+      Dashboard statis & client-side. Format CSV yang diterima: <code>date,slot,views,likes,comments,shares,retention</code>.<br/>
+      Buat oleh bot — siap pakai offline. Branding: <strong>@mlbb.cliperr</strong>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
